@@ -1,0 +1,16 @@
+.images-preview-div .col-md-4 {
+    margin-bottom: 20px;
+}
+
+.images-preview-div img {
+    max-width: 100%;
+    height: auto;
+}
+
+.images-preview-div button {
+    width: 100%;
+}
+.images-preview-div img {
+    padding: 10px;
+    max-width: 100px;
+}
