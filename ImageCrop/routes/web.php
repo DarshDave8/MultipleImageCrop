@@ -28,9 +28,10 @@ Route::put('/posts/{id}', [PostController::class, 'update'])->name('image.update
 Route::delete('/posts/{id}', [PostController::class, 'destroy'])->name('image.destroy');
 
 Route::get('upload-multiple-image-preview', [UploadImagesController::class, 'index']);
-Route::post('crop-image', [UploadImagesController::class, 'cropAndSave']);
-
 Route::post('upload-multiple-image-preview', [UploadImagesController::class, 'store']);
+Route::get('edit-multiple-image-preview', [UploadImagesController::class, 'edit']);
+// Route::post('crop-image', [UploadImagesController::class, 'cropAndSave']);
+
 
 
 Route::get('multi-image-crop', [MultiImageCropController::class, 'add']);

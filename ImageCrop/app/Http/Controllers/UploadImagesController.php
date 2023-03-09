@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\CroppedImage;
 use Illuminate\Http\Request;
 use App\Models\Photo;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -13,73 +15,118 @@ class UploadImagesController extends Controller
 {
     public function index()
     {
-        return view('images-upload-form');
+        $data = Photo::all();
+        return view('images-upload-form')->with('data',$data);
     }
 
     public function store(Request $request)
     {
-        // $validateImageData = $request->validate([
-        //     'images' => 'required',
-        //     'images.*' => 'mimes:jpg,png,jpeg,gif,svg'
-        // ]);
+        // dd($request->all());
+        $request->validate([
+            'image.*' => 'image|max:5096',
+        ]);
 
-        $insert = [];
-        dd($request->all());
-        // Upload new images
-        if ($request->hasfile('images')) {
-            foreach ($request->file('images') as $key => $file) {
-                if ($file) {
-                    $path = $file->store('public/Photo/original');
-                    $name = $file->getClientOriginalName();
-                    $insert[$key]['title'] = $name;
-                    $insert[$key]['path'] = $path;
+        $data = [];
+        if ($request->hasFile('image')) {
+            // Process each uploaded image
+            Storage::makeDirectory('public/Photo/original');
+            Storage::makeDirectory('public/Photo/thumb');
+            foreach ($request->file('image') as $key => $file) {
+                try {
+                    // Generate a unique filename
+                    $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+
+                    // Save the original image to disk
+                    $originalPath = 'public/Photo/original/' . $filename;
+                    $success = $file->storeAs('public/Photo/original', $filename);
+
+                    if ($success) {
+                        // Create a new Photo model and save it to the database
+                        $photo = new Photo();
+                        $photo->path = $originalPath;
+                        $photo->title = $filename;
+                        $photo->save();
+                        DB::commit();
+                        // Optimize the image (optional)
+                        // Intervention\Image\Facades\Image::make($file)->save(storage_path('app/public/Photo/original/'.$filename), 75);
+                        // $data[] = $photo;
+                        array_push($data, $photo);
+                    } else {
+                        throw new \Exception('Failed to save image to disk');
+                    }
+
+                    // Save the thumbnail image if available
+                    if (isset($request->croppedImages[$key])) {
+                        // Decode the base64 image
+                        $base64_str = $request->croppedImages[$key];
+                        $image = str_replace('data:image/png;base64,', '', $base64_str);
+                        $image = str_replace(' ', '+', $image);
+                        $decodedImage = base64_decode($image);
+
+                        // Save the thumbnail image to disk
+                        $thumbnailPath = 'Photo/thumb/' . $filename;
+                        $success = Storage::disk('public')->put($thumbnailPath, $decodedImage);
+
+                        if ($success) {
+                            // Create a new Photo model and save it to the database
+                            $thumbnail = new Photo();
+                            $thumbnail->path = $thumbnailPath;
+                            $thumbnail->title = $filename;
+                            $thumbnail->save();
+                            DB::commit();
+                            // Optimize the image (optional)
+                            // Intervention\Image\Facades\Image::make($decodedImage)->save(storage_path('app/public/Photo/thumb/'.$thumbnailFilename), 75);
+                        } else {
+                            throw new \Exception('Failed to save thumbnail image to disk');
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // Handle errors
+                    DB::rollback();
+                    Log::error('Error saving image: ' . $e->getMessage());
+                    return redirect()->back()->with('error', 'Error saving image: ' . $e->getMessage());
                 }
             }
         }
-        // Insert new images
-        Photo::insert($insert);
-        if ($request->croppedImages) {
-            foreach ($request->input('croppedImages') as $key => $file) {
-                $base64_str = $file;
-                $image = str_replace('data:image/png;base64,', '', $base64_str);
-                $image = str_replace(' ', '+', $image);
-                $decodedImage = base64_decode($image);
-                $filename = uniqid() . '.png';
-                Storage::disk('public')->put('/Photo/thumb' . $filename, $decodedImage);
-                $imagePath = 'storage/Photo/thumb/' . $filename;
-                $CroppedImage = new Photo();
-                $CroppedImage->path = $imagePath;
-                $CroppedImage->title = $filename;
-                $CroppedImage->save();
-            }
-        }
-        return redirect('upload-multiple-image-preview')->with('status', 'All Images has been uploaded successfully');
+        $view = view('images-edit-form')->with('data', $data)->render();
+        $result = [
+            "data" => $data,
+            "view" => $view
+        ];
+        return response()->json(['success' => 'Images uploaded successfully.', 'result' => $result]);
     }
 
 
-
-
-
-
-
-    public function cropAndSave(Request $request)
+    public function edit()
     {
-        $base64_str = $request->input('image');
-        $image = str_replace('data:image/png;base64,', '', $base64_str);
-        $image = str_replace(' ', '+', $image);
-        $decodedImage = base64_decode($image);
-        $filename = uniqid() . '.png';
-        Storage::disk('public')->put('cropImages/' . $filename, $decodedImage);
-        $imagePath = 'storage/images/' . $filename;
-        $CroppedImage = new CroppedImage();
-        $CroppedImage->path = $imagePath;
-        $CroppedImage->title = $filename;
-        $CroppedImage->save();
-
-
-        // Redirect to the upload page
-        return view('images-upload-form')->with('status', 'success');
+        $data = Photo::all();
+        return view('images-edit-form')->with('data', $data);
     }
+
+
+    public  function update(Request $request)
+    {
+    }
+
+
+    // public function cropAndSave(Request $request)
+    // {
+    //     $base64_str = $request->input('image');
+    //     $image = str_replace('data:image/png;base64,', '', $base64_str);
+    //     $image = str_replace(' ', '+', $image);
+    //     $decodedImage = base64_decode($image);
+    //     $filename = uniqid() . '.png';
+    //     Storage::disk('public')->put('cropImages/' . $filename, $decodedImage);
+    //     $imagePath = 'storage/images/' . $filename;
+    //     $CroppedImage = new CroppedImage();
+    //     $CroppedImage->path = $imagePath;
+    //     $CroppedImage->title = $filename;
+    //     $CroppedImage->save();
+
+
+    //     // Redirect to the upload page
+    //     return view('images-upload-form')->with('status', 'success');
+    // }
 
     public function deleteFile(Request $request)
     {
@@ -93,4 +140,10 @@ class UploadImagesController extends Controller
             return response()->json(['success' => false, 'message' => 'File not found']);
         }
     }
+
+    // public function edit()
+    // {
+    //     $data = Photo::all();
+    //     return view('images-edit-form', $data);
+    // }
 }
