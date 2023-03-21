@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MultiImageCrop;
+use App\Models\Photo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -28,6 +29,10 @@ class MultiImageCropController extends Controller
         $this->ThumbImagePath = Config::get('constant.IMAGE_THUMB_PHOTO_UPLOAD_PATH');
         $this->ThumbImageHeight = Config::get('constant.IMAGE_THUMB_PHOTO_HEIGHT');
         $this->ThumbImageWidth = Config::get('constant.IMAGE_THUMB_PHOTO_WIDTH');
+    }
+    public function index(){
+        $data = Photo::all();
+        return view('multipleImages')->with('data', $data);
     }
 
     public function add()

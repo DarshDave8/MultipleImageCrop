@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ImageCrop;
 use App\Http\Controllers\MultiImageCropController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
@@ -23,16 +24,23 @@ Route::get('/posts', [PostController::class, 'index'])->name('image.index');
 Route::get('/posts/create',  [PostController::class, 'create'])->name('image.create');
 Route::post('/posts', [PostController::class, 'store'])->name('image.store');
 Route::get('/posts/{id}', [PostController::class, 'show'])->name('image.show');
-Route::get('/posts/{id}/edit',[PostController::class, 'edit'])->name('image.edit');
+Route::get('/posts/{id}/edit', [PostController::class, 'edit'])->name('image.edit');
 Route::put('/posts/{id}', [PostController::class, 'update'])->name('image.update');
 Route::delete('/posts/{id}', [PostController::class, 'destroy'])->name('image.destroy');
 
-Route::get('upload-multiple-image-preview', [UploadImagesController::class, 'index']);
+Route::get('view-multiple-Images', [UploadImagesController::class, 'index']);
 Route::post('upload-multiple-image-preview', [UploadImagesController::class, 'store']);
 Route::get('edit-multiple-image-preview', [UploadImagesController::class, 'edit']);
 // Route::post('crop-image', [UploadImagesController::class, 'cropAndSave']);
+Route::delete('/delete-image/{id}', [UploadImagesController::class, 'deleteFile']);
 
 
-
+Route::get('multi-image-crop', [MultiImageCropController::class, 'index']);
 Route::get('multi-image-crop', [MultiImageCropController::class, 'add']);
 Route::post('multi-image-crop', [MultiImageCropController::class, 'store']);
+
+
+Route::get('imageList', [ImageCrop::class, 'list']);
+Route::post('ImageUpdate', [ImageCrop::class, 'store']);
+Route::delete('/delete-crop-image/{id}', [ImageCrop::class, 'deleteFile']);
+

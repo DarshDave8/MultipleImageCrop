@@ -223,3 +223,58 @@ $(function (e) {
 
 
 });
+
+
+// Submit form data to controller
+        //     $.ajax({
+        //         url: '/upload-multiple-image-preview',
+        //         type: 'POST',
+        //         data: formData,
+        //         dataType: 'text',
+        //         contentType: false,
+        //         processData: false,
+        //         headers: {
+        //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+        //         },
+        //     })
+        //         .done((res) => {
+        //             let parsedResponse = JSON.parse(res);
+        //             console.log(parsedResponse);
+        //             let view = parsedResponse.result.view;
+        //             var container = $('.images-preview-div');
+        //             container.empty();
+        //             $('.images-preview-div').html(view);
+        //             formData = new FormData();
+        //             let responseData = parsedResponse.result.data;
+        //             dataArray = responseData.map((item) => {
+        //                 let newItem = {
+        //                     ...item,
+        //                     id: item.id
+        //                 };
+        //                 let image = $(`#image-${item.id}`)[0]; // Get the DOM element
+        //                 let imageUrl = $(`#image-${item.id}`).attr('src');
+        //                 console.log(imageUrl);
+        //                 fetch(imageUrl)
+        //                     .then(response => response.blob()) // Convert response to blob
+        //                     .then(blob => {
+        //                         // Convert blob to base64 string
+        //                         const reader = new FileReader();
+        //                         reader.readAsDataURL(blob);
+        //                         reader.onloadend = () => {
+        //                             let base64String = reader.result;
+        //                             console.log(base64String);
+        //                             formData.append('image[' + item.id + ']', base64String);
+        //                         };
+        //                     })
+        //                     .catch(error => console.error(error));
+        //                 return newItem;
+        //             });
+        //         })
+        //         .fail((jqXHR, textStatus, errorThrown) => {
+        //             console.error(`${textStatus}: ${errorThrown}`);
+        //         });
+
+        //     event.preventDefault();
+        // });
+
+

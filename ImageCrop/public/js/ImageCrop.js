@@ -6,7 +6,7 @@ $(function (e) {
         images.each(function () {
             let id = $(this).data('id');
             let src = $(this).attr('src');
-            // console.log(`Processing image ${id} with src ${src}`);
+            console.log(`Processing image ${id} with src ${src}`);
             let isHidden = $(this).is(':hidden');
             if (isHidden) {
                 let img = new Image();
@@ -18,7 +18,7 @@ $(function (e) {
                     let ctx = canvas.getContext('2d');
                     ctx.drawImage(this, 0, 0);
                     let base64String = canvas.toDataURL('image/png');
-                    // console.log(`Image ${id} is hidden, base64 string is ${base64String}`);
+                    console.log(`Image ${id} is hidden, base64 string is ${base64String}`);
                     formData.append(`image[${id}]`, base64String);
                 };
             } else {
@@ -104,7 +104,7 @@ $(function (e) {
         }
 
         $.ajax({
-            url: `/delete-image/${id}`,
+            url: `/delete-crop-image/${id}`,
             type: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
@@ -214,7 +214,7 @@ $(function (e) {
     $('#myForm').on('submit', (event) => {
         const images = document.querySelectorAll('.images-preview-div img');
         $.ajax({
-            url: '/upload-multiple-image-preview',
+            url: '/ImageUpdate',
             type: 'POST',
             data: formData,
             contentType: false,

@@ -41,26 +41,27 @@
                             <div class="mt-1 text-center">
                                 <div class="row images-preview-div">
                                     @foreach ($data as $image)
-                                        @if (!is_null($image->title))
-                                            @if (file_exists(public_path() . '/storage/Photo/CroppedImage/' . $image->title . ''))
+                                        @if (!is_null($image->original_name))
+                                            @if (!is_null($image->crop_name))
                                                 <div class="col-md-4 image-container"
                                                     id="image-container{{ $image->id }}">
                                                     <button type="button" class="btn btn-danger delete-btn mt-1"
                                                         id="delete-btn-{{ $image->id }}">Delete</button>
                                                     <button type="button" class="btn btn-secondary crop-btn mt-1"
                                                         id="crop-btn-{{ $image->id }}">Crop</button>
-                                                        <img class="img-fluid"
-                                                            src="{{ url('storage/Photo/original/' . $image->title) }}"
-                                                            alt="user-avatar" class="d-block rounded"
-                                                            id="image-{{ $image->id }}" data-id="{{ $image->id }}"
-                                                            hidden />
                                                     <img class="img-fluid"
-                                                        src="{{ url('storage/Photo/CroppedImage/' . $image->title) }}"
+                                                        src="{{ url('storage/image/original/' . $image->original_name) }}"
+                                                        alt="user-avatar" class="d-block rounded"
+                                                        id="image-{{ $image->id }}" data-id="{{ $image->id }}"
+                                                        hidden />
+                                                    <img class="img-fluid"
+                                                        src="{{ url('storage/image/crop/' . $image->crop_name) }}"
                                                         alt="user-avatar" class="d-block rounded"
                                                         id="dummyImage{{ $image->id }}"
-                                                        name="dummyImage{{ $image->id }}" />
+                                                        name="dummyImage{{ $image->id }}" data-id="{{ $image->id }}" />
                                                     <input type="hidden" name="cropped[{{ $image->id }}]"
-                                                        id="cropped{{ $image->id }}" value="{{ $image->title }}">
+                                                        id="cropped{{ $image->id }}"
+                                                        value="{{ $image->crop_name }}">
                                                 </div>
                                             @else
                                                 <div class="col-md-4 image-container"
@@ -70,16 +71,13 @@
                                                     <button type="button" class="btn btn-secondary crop-btn mt-1"
                                                         id="crop-btn-{{ $image->id }}">Crop</button>
                                                     <img class="img-fluid"
-                                                        src="{{ url('storage/Photo/original/' . $image->title) }}"
+                                                        src="{{ url('storage/image/original/' . $image->original_name) }}"
                                                         alt="user-avatar" class="d-block rounded"
-                                                        id="image-{{ $image->id }}"
-                                                        data-id="{{ $image->id }}" />
-
+                                                        id="image-{{ $image->id }}" data-id="{{ $image->id }}"/>
                                                 </div>
                                             @endif
                                         @endif
                                     @endforeach
-
                                 </div>
                             </div>
                         </div>
@@ -126,6 +124,6 @@
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://unpkg.com/bootstrap@4/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
-<script src="{{ URL::asset('js/custom.js') }}"></script>
+<script src="{{ URL::asset('js/ImageCrop.js') }}"></script>
 
 </html>

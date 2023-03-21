@@ -3,9 +3,10 @@
 return [
     'FILESYSTEM_CLOUD' => env('FILESYSTEM_CLOUD', 'public'),
 
-    'IMAGE_ORIGINAL_PHOTO_UPLOAD_PATH' => 'uploads/image/original/',
-    'IMAGE_THUMB_PHOTO_UPLOAD_PATH' => 'uploads/image/thumb/',
-    'IMAGE_THUMB_PHOTO_HEIGHT' => 500,
-    'IMAGE_THUMB_PHOTO_WIDTH' => 500,
+    'DEFAULT_ERROR_MESSAGE' => 'Whoops! Something went wrong. Please try again.',
 
+    'IMAGE_ORIGINAL_PHOTO_UPLOAD_PATH' => 'public/image/original/',
+    'IMAGE_THUMB_PHOTO_UPLOAD_PATH' => 'public/image/thumb/',
+    'IMAGE_CROP_PHOTO_UPLOAD_PATH' => 'public/image/crop/',
 ];
+?>
